@@ -17,6 +17,8 @@ app.use(cors({
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.use("/api/auth", require("./routes/auth.routes"));
+app.use("/api/date-number", require("./routes/dateNumber.routes"));
+
 app.use('/api/v1', scraperRoutes);
 
 module.exports = app;
