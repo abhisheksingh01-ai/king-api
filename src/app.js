@@ -3,6 +3,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const swaggerUI = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
+const scraperRoutes = require('./routes/scraperRoutes');
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.use(cors({
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.use("/api/auth", require("./routes/auth.routes"));
+app.use('/api/v1', scraperRoutes);
 
 module.exports = app;
