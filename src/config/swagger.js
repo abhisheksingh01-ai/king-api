@@ -10,7 +10,7 @@ module.exports = swaggerJsdoc({
     },
     servers: [
       {
-        url: "http://localhost:5000",
+        url: "https://king-api-emi1.onrender.com",
         description: "Local server",
       },
     ],
