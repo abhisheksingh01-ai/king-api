@@ -5,6 +5,7 @@ const swaggerUI = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 
 const scraperRoutes = require("./routes/scraperRoutes");
+const admin = require("./scripts/setUpAdmins");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(
 
 // ---------- Routes ----------
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+app.use("/api/setup-admin", admin);
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/date-number", require("./routes/dateNumber.routes"));
 app.use("/api/v1", scraperRoutes);
