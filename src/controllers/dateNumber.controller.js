@@ -53,3 +53,12 @@ exports.updateNumber = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getAllDateNumbers = async (req, res) => {
+  try {
+    const data = await DateNumber.find().sort({ date: -1 });
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

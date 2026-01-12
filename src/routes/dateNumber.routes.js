@@ -2,6 +2,7 @@ const router = require("express").Router();
 const {
   addDateNumber,
   updateNumber,
+  getAllDateNumbers,
 } = require("../controllers/dateNumber.controller");
 
 /**
@@ -10,6 +11,36 @@ const {
  *   name: DateNumber
  *   description: Date and Number Management
  */
+
+/**
+ * @swagger
+ * /api/date-number:
+ *   get:
+ *     summary: Get all dates with numbers (Dashboard)
+ *     tags: [DateNumber]
+ *     responses:
+ *       200:
+ *         description: List fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       date:
+ *                         type: string
+ *                         example: "12-01-2026"
+ *                       number:
+ *                         type: number
+ *                         example: 45
+ */
+router.get("/", getAllDateNumbers);
 
 /**
  * @swagger
@@ -69,5 +100,6 @@ router.post("/", addDateNumber);
  *         description: Updated successfully
  */
 router.put("/:date", updateNumber);
+
 
 module.exports = router;
