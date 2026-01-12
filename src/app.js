@@ -15,7 +15,7 @@ app.use(cookieParser());
 // ✅ FIXED CORS (cookies + frontend)
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://king-frontend-mu.vercel.app/",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
