@@ -1,23 +1,28 @@
 const DateNumber = require("../models/dateNumber.model");
 
 /**
- * Add date & number
+ * Add or Update date & number (UPSERT)
  */
 exports.addDateNumber = async (req, res) => {
   try {
     const { date, number } = req.body;
 
-    const exists = await DateNumber.findOne({ date });
-    if (exists) {
-      return res.status(400).json({
-        message: "Date already exists",
-      });
+    if (!date || number === undefined) {
+      return res.status(400).json({ message: "Date and number are required" });
     }
 
-    const data = await DateNumber.create({ date, number });
+    const data = await DateNumber.findOneAndUpdate(
+      { date },
+      { $set: { number } },
+      {
+        new: true,
+        upsert: true, // 🔥 ONE QUERY ONLY
+        runValidators: true,
+      }
+    ).lean();
 
     res.status(201).json({
-      message: "Date & number added successfully",
+      message: "Date & number saved successfully",
       data,
     });
   } catch (error) {
@@ -35,14 +40,12 @@ exports.updateNumber = async (req, res) => {
 
     const updated = await DateNumber.findOneAndUpdate(
       { date },
-      { number },
-      { new: true }
-    );
+      { $set: { number } },
+      { new: true, runValidators: true }
+    ).lean();
 
     if (!updated) {
-      return res.status(404).json({
-        message: "Date not found",
-      });
+      return res.status(404).json({ message: "Date not found" });
     }
 
     res.json({
@@ -54,9 +57,16 @@ exports.updateNumber = async (req, res) => {
   }
 };
 
+/**
+ * Get all dates (FAST)
+ */
 exports.getAllDateNumbers = async (req, res) => {
   try {
-    const data = await DateNumber.find().sort({ date: -1 });
+    const data = await DateNumber
+      .find({})
+      .sort({ date: 1 }) // oldest → latest
+      .lean(); // 🔥 FAST
+
     res.json({ data });
   } catch (error) {
     res.status(500).json({ error: error.message });

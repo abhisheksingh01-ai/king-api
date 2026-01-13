@@ -1,23 +1,30 @@
 const express = require("express");
 const router = express.Router();
-const { scrapeJKSattaAllMonths } = require("../controllers/scraperController");
+
+const {
+  scrapeJKSattaAllMonths,
+} = require("../controllers/scrape.controller");
+
+const {
+  getScrapeResults,
+} = require("../controllers/scrapeRead.controller");
 
 /**
  * @swagger
  * tags:
  *   name: Scraper
- *   description: Web scraping APIs
+ *   description: JK Satta scraping & result APIs
  */
 
 /**
  * @swagger
  * /api/v1/scrape:
  *   get:
- *     summary: Scrape full data from JK Satta (2026 onwards)
+ *     summary: Scrape JK Satta data (2026 onwards) and save to database
  *     tags: [Scraper]
  *     responses:
  *       200:
- *         description: Successfully retrieved data
+ *         description: Data scraped and stored successfully
  *         content:
  *           application/json:
  *             schema:
@@ -36,16 +43,46 @@ const { scrapeJKSattaAllMonths } = require("../controllers/scraperController");
  *                     properties:
  *                       gameId:
  *                         type: string
- *                         example: "29"
+ *                         example: "116"
  *                       date:
  *                         type: string
- *                         example: "12-01-2026"
+ *                         example: "13-01-2026"
  *                       resultNumber:
  *                         type: string
- *                         example: "23"
+ *                         example: "51"
  *       500:
  *         description: Server error
  */
 router.get("/scrape", scrapeJKSattaAllMonths);
+
+/**
+ * @swagger
+ * /api/v1/results:
+ *   get:
+ *     summary: Get JK Satta results from database
+ *     tags: [Scraper]
+ *     parameters:
+ *       - in: query
+ *         name: gameId
+ *         schema:
+ *           type: string
+ *         example: "116"
+ *       - in: query
+ *         name: date
+ *         schema:
+ *           type: string
+ *         example: "13-01-2026"
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         example: 20
+ *     responses:
+ *       200:
+ *         description: Results fetched successfully
+ *       500:
+ *         description: Server error
+ */
+router.get("/results", getScrapeResults);
 
 module.exports = router;
