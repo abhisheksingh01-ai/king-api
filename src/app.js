@@ -6,6 +6,7 @@ const swaggerSpec = require("./config/swagger");
 
 const scraperRoutes = require("./routes/scraperRoutes");
 const admin = require("./scripts/setUpAdmins");
+const gameChartRoutes = require("./routes/gameChart.routes");
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/api/setup-admin", admin);
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/date-number", require("./routes/dateNumber.routes"));
 app.use("/api/v1", scraperRoutes);
+app.use("/api", gameChartRoutes);
 
 // ---------- Health Check ----------
 app.get("/", (req, res) => {
