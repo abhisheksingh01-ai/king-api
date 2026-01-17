@@ -4,26 +4,17 @@ const DateNumber = require("../models/dateNumber.model");
 exports.getGameChart = async (req, res) => {
   try {
     const [scrapeData, noidaData] = await Promise.all([
-      ScrapeResult.find({}, "gameId date resultNumber").lean(),
-      DateNumber.find({}, "date number").lean(),
+      ScrapeResult.find(
+        {},
+        "gameId date resultNumber createdAt"
+      ).lean(),
+      DateNumber.find(
+        {},
+        "date number createdAt"
+      ).lean(),
     ]);
 
     const map = new Map();
-
-    const parseTS = (d) =>
-      new Date(d.split("-").reverse().join("-")).getTime();
-
-    const createRow = (date) => ({
-      date,
-      timestamp: parseTS(date),
-      DESAWAR: "",
-      "SHRI GANESH": "",
-      "DELHI BAZAR": "",
-      GALI: "",
-      GHAZIABAD: "",
-      FARIDABAD: "",
-      "NOIDA KING": "",
-    });
 
     const GAME_MAP = {
       "116": "DESAWAR",
@@ -34,26 +25,56 @@ exports.getGameChart = async (req, res) => {
       "117": "FARIDABAD",
     };
 
-    for (const { gameId, date, resultNumber } of scrapeData) {
-      const col = GAME_MAP[gameId];
-      if (!col || !date) continue;
+    // create base row
+    const createRow = (date) => ({
+      date,
+      games: {}
+    });
 
-      if (!map.has(date)) map.set(date, createRow(date));
-      map.get(date)[col] = String(resultNumber ?? "");
+    // scrape results (multiple games, different times)
+    for (const { gameId, date, resultNumber, createdAt } of scrapeData) {
+      const gameName = GAME_MAP[gameId];
+      if (!gameName || !date) continue;
+
+      if (!map.has(date)) {
+        map.set(date, createRow(date));
+      }
+
+      map.get(date).games[gameName] = {
+        result: String(resultNumber ?? ""),
+        createdAt,
+        timestamp: new Date(createdAt).getTime()
+      };
     }
 
-    for (const { date, number } of noidaData) {
+    // noida king data
+    for (const { date, number, createdAt } of noidaData) {
       if (!date) continue;
 
-      if (!map.has(date)) map.set(date, createRow(date));
-      map.get(date)["NOIDA KING"] = String(number ?? "");
+      if (!map.has(date)) {
+        map.set(date, createRow(date));
+      }
+
+      map.get(date).games["NOIDA KING"] = {
+        result: String(number ?? ""),
+        createdAt,
+        timestamp: new Date(createdAt).getTime()
+      };
     }
 
-    const rows = Array.from(map.values()).sort(
-      (a, b) => a.timestamp - b.timestamp
-    );
+    // sort dates by earliest game time
+    const rows = Array.from(map.values()).sort((a, b) => {
+      const aTime = Math.min(
+        ...Object.values(a.games).map(g => g.timestamp)
+      );
+      const bTime = Math.min(
+        ...Object.values(b.games).map(g => g.timestamp)
+      );
+      return aTime - bTime;
+    });
 
     res.json({ success: true, data: rows });
+
   } catch (err) {
     res.status(500).json({
       success: false,
