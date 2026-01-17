@@ -42,7 +42,14 @@ exports.login = async (req, res) => {
     maxAge: 86400000
   });
 
-  res.json({ message: "Login successful" });
+  res.json({ 
+    message: "Login successful", 
+    user: { 
+      name: user.name, 
+      email: user.email, 
+      role: user.role 
+    } 
+  })
 };
 
 exports.logout = (req, res) => {
