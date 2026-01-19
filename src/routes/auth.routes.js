@@ -1,11 +1,16 @@
 const router = require("express").Router();
 const { register, login, logout } = require("../controllers/auth.controller");
 
+const noCache = (req, res, next) => {
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+  next();
+};
+
 /**
  * @swagger
  * tags:
- *   name: Auth
- *   description: Authentication APIs
+ *   - name: Auth
+ *     description: Authentication APIs
  */
 
 /**
@@ -27,26 +32,15 @@ const { register, login, logout } = require("../controllers/auth.controller");
  *             properties:
  *               name:
  *                 type: string
- *                 example: Abhishek
  *               email:
  *                 type: string
- *                 example: abhishek@test.com
  *               password:
  *                 type: string
- *                 example: 123456
  *     responses:
  *       200:
  *         description: User registered successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: User registered successfully
  */
-router.post("/register", register);
+router.post("/register", noCache, register);
 
 /**
  * @swagger
@@ -66,23 +60,13 @@ router.post("/register", register);
  *             properties:
  *               email:
  *                 type: string
- *                 example: abhishek@test.com
  *               password:
  *                 type: string
- *                 example: 123456
  *     responses:
  *       200:
  *         description: User logged in successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  */
-router.post("/login", login);
+router.post("/login", noCache, login);
 
 /**
  * @swagger
@@ -93,15 +77,7 @@ router.post("/login", login);
  *     responses:
  *       200:
  *         description: User logged out successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: User logged out successfully
  */
-router.post("/logout", logout);
+router.post("/logout", noCache, logout);
 
 module.exports = router;

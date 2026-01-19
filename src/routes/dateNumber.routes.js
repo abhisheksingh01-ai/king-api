@@ -5,42 +5,31 @@ const {
   getAllDateNumbers,
 } = require("../controllers/dateNumber.controller");
 
+const cacheShort = (req, res, next) => {
+  if (req.method === "GET") {
+    res.set("Cache-Control", "public, max-age=10, stale-while-revalidate=5");
+  }
+  next();
+};
+
 /**
  * @swagger
  * tags:
- *   name: DateNumber
- *   description: Date and Number Management
+ *   - name: DateNumber
+ *     description: Date and Number Management
  */
 
 /**
  * @swagger
  * /api/date-number:
  *   get:
- *     summary: Get all dates with numbers (Dashboard)
+ *     summary: Get all dates with numbers
  *     tags: [DateNumber]
  *     responses:
  *       200:
  *         description: List fetched successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       _id:
- *                         type: string
- *                       date:
- *                         type: string
- *                         example: "12-01-2026"
- *                       number:
- *                         type: number
- *                         example: 45
  */
-router.get("/", getAllDateNumbers);
+router.get("/", cacheShort, getAllDateNumbers);
 
 /**
  * @swagger
@@ -60,10 +49,8 @@ router.get("/", getAllDateNumbers);
  *             properties:
  *               date:
  *                 type: string
- *                 example: "12-01-2026"
  *               number:
  *                 type: number
- *                 example: 23
  *     responses:
  *       201:
  *         description: Added successfully
@@ -82,7 +69,6 @@ router.post("/", addDateNumber);
  *         required: true
  *         schema:
  *           type: string
- *         example: "12-01-2026"
  *     requestBody:
  *       required: true
  *       content:
@@ -94,12 +80,10 @@ router.post("/", addDateNumber);
  *             properties:
  *               number:
  *                 type: number
- *                 example: 45
  *     responses:
  *       200:
  *         description: Updated successfully
  */
 router.put("/:date", updateNumber);
-
 
 module.exports = router;

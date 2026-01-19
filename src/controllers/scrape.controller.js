@@ -26,18 +26,22 @@ const scrapeJKSattaAllMonths = async (req, res) => {
     for (const gameId in record) {
       for (const dateKey in record[gameId]) {
         const entry = record[gameId][dateKey];
-        const year = Number(dateKey.split("-")[2]);
+        const [day, month, yearStr] = entry.date.split("-");
+        const year = Number(yearStr);
 
         if (year >= startYear) {
+          // Prepare ISO date for optimization
+          const isoDate = new Date(year, Number(month) - 1, Number(day));
+
           const payload = {
             gameId,
             date: entry.date,
+            isoDate: isoDate, // 🔥 Insert Optimized Date
             resultNumber: entry.no,
           };
 
           responseData.push(payload);
 
-          // 🔥 BULK UPSERT (FAST)
           bulkOps.push({
             updateOne: {
               filter: { gameId, date: entry.date },
@@ -49,17 +53,12 @@ const scrapeJKSattaAllMonths = async (req, res) => {
       }
     }
 
-    // 🚀 single DB hit
     if (bulkOps.length) {
       await ScrapeResult.bulkWrite(bulkOps, { ordered: false });
     }
 
-    // Sort response
-    responseData.sort(
-      (a, b) =>
-        new Date(b.date.split("-").reverse().join("-")) -
-        new Date(a.date.split("-").reverse().join("-"))
-    );
+    // Fast Sort using ISO date object we just created
+    responseData.sort((a, b) => b.isoDate - a.isoDate);
 
     res.json({
       success: true,
