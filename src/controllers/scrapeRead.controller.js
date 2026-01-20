@@ -8,11 +8,13 @@ exports.getScrapeResults = async (req, res) => {
     if (gameId) filter.gameId = gameId;
     if (date) filter.date = date;
 
-    // 🔥 Cache Control: Tell browser to cache this for 60 seconds
-    res.set('Cache-Control', 'public, max-age=60');
+    // 🔥 FIX: Browser caching disabled
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Expires', '-1');
+    res.set('Pragma', 'no-cache');
 
     const data = await ScrapeResult.find(filter)
-      .sort({ isoDate: -1 }) // 🔥 Much faster sort
+      .sort({ isoDate: -1 }) // Optimized Sort
       .limit(Number(limit))
       .lean();
 

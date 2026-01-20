@@ -15,12 +15,11 @@ exports.addDateNumber = async (req, res) => {
       return res.status(400).json({ message: "Date and number are required" });
     }
 
-    // 🔥 MANUAL ISO DATE: findOneAndUpdate bypasses pre-save hooks
     const isoDate = getIsoDate(date);
 
     const data = await DateNumber.findOneAndUpdate(
       { date },
-      { $set: { number, isoDate } }, // Set both string and real date
+      { $set: { number, isoDate } },
       {
         new: true,
         upsert: true,
@@ -42,7 +41,6 @@ exports.updateNumber = async (req, res) => {
     const { date } = req.params;
     const { number } = req.body;
 
-    // Note: We don't need to recalc isoDate here if date isn't changing
     const updated = await DateNumber.findOneAndUpdate(
       { date },
       { $set: { number } },
@@ -64,9 +62,12 @@ exports.updateNumber = async (req, res) => {
 
 exports.getAllDateNumbers = async (req, res) => {
   try {
+    // 🔥 FIX: Ensure fresh data on every fetch
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    
     const data = await DateNumber
       .find({})
-      .sort({ isoDate: 1 }) // 🔥 OPTIMIZED: Sort by Int (Timestamp) not String
+      .sort({ isoDate: 1 })
       .lean(); 
 
     res.json({ data });
