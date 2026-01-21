@@ -41,8 +41,8 @@ targetTimes.forEach((timeStr) => {
       // --- OPTION B: Call your own API (Easiest Integration) ---
       // This simulates a user visiting the scrape URL
       // Change the URL below to match your actual API route for scraping
-      // const scrapeUrl = `https://king-api-emi1.onrender.com/api/v1/scrape`; 
-      const scrapeUrl = `http://localhost:5000/api/v1/scrape`
+      const scrapeUrl = `https://king-api-emi1.onrender.com/api/v1/scrape`; 
+      // const scrapeUrl = `http://localhost:5000/api/v1/scrape`
       await axios.get(scrapeUrl);
       
       console.log(`✅ Scrape Success for ${timeStr}`);
