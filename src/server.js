@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 // 3. SCHEDULER LOGIC (The Fix)
 // ---------------------------------------------------------
 const targetTimes = [
-  "06:30", "15:20", "16:50", "18:20", "21:45", "23:45"
+  "06:30", "15:20", "17:55", "18:25", "21:50", "23:45"
 ];
 
 console.log(`🚀 Scheduler Active. Target Times (IST): ${targetTimes.join(", ")}`);
@@ -41,7 +41,8 @@ targetTimes.forEach((timeStr) => {
       // --- OPTION B: Call your own API (Easiest Integration) ---
       // This simulates a user visiting the scrape URL
       // Change the URL below to match your actual API route for scraping
-      const scrapeUrl = `https://king-api-emi1.onrender.com/api/v1/scrape`; 
+      // const scrapeUrl = `https://king-api-emi1.onrender.com/api/v1/scrape`; 
+      const scrapeUrl = `http://localhost:5000/api/v1/scrape`
       await axios.get(scrapeUrl);
       
       console.log(`✅ Scrape Success for ${timeStr}`);
