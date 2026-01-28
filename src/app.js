@@ -31,7 +31,8 @@ app.use(cookieParser());
 // 4. Optimized CORS
 const allowedOrigins = new Set([
   "http://localhost:5173",
-  "https://king-frontend-mu.vercel.app"
+  "https://king-frontend-mu.vercel.app",
+  "https://new-king-six.vercel.app"
 ]);
 
 app.use(
